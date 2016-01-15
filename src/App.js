@@ -11,6 +11,7 @@ import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ContentInbox from 'material-ui/lib/svg-icons/content/inbox';
 import BookIcon from 'material-ui/lib/svg-icons/action/book';
+import RaisedButton from 'material-ui/lib/raised-button';
 // Parser
 var bcv_parser = require("bible-passage-reference-parser/js/en_bcv_parser").bcv_parser;
 var bcv = new bcv_parser;
@@ -21,11 +22,12 @@ export default class App extends Component {
     alert(clickedID);
   }
   render() {
-    var items = [
-      {id: 1, title: 'Item 1'},
-      {id: 2, title: 'Item 2'},
-      {id: 3, title: 'Item 3'}
-    ];
+    var items = [];
+    var books = bcv.translation_info("").books;
+    var chapters = bcv.translation_info("").chapters;
+    for (var i=0; i<66; i++) {
+      items.push({id: i, title: books[i], description: chapters[books[i]].length});
+    }
 
     return (
       <div>
@@ -47,11 +49,14 @@ export default class App extends Component {
           }
         />
         <List>
-          {items.map(function(item) {
-            return <ListItem id={item.id} primaryText={item.title} leftIcon={<BookIcon />}/>
-          })}
+          {
+            items.map(function(item) {
+              return <ListItem id={item.id} key={item.id} primaryText={item.title} secondaryText={item.description} leftIcon={<BookIcon />} onTouchTap={this._handleTouchTap}/>
+            }.bind(this))
+          }
         </List>
         <Link to={'book'} className="button button-primary">Book</Link>
+        <RaisedButton label="Click" onTouchTap={this._handleTouchTap}/>
       </div>
     );
   }
